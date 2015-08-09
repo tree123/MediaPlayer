@@ -20,6 +20,7 @@ public class Player extends ActionBarActivity implements View.OnClickListener {
     MediaPlayer mp;
     ArrayList<File> mySongs;
     Uri u;
+    int position;
 
     SeekBar sb;
     Button btnPV, btnFF, btnPlay, btnFB, btnNxt;
@@ -43,7 +44,7 @@ public class Player extends ActionBarActivity implements View.OnClickListener {
         Intent i = getIntent();
         Bundle b = i.getExtras();
         mySongs = (ArrayList) b.getParcelableArrayList("songlist");
-        int position = b.getInt("pos",0);
+        position = b.getInt("pos",0);
 
         u = Uri.parse(mySongs.get(position).toString());
         mp = MediaPlayer.create(getApplicationContext(), u);
@@ -75,5 +76,38 @@ public class Player extends ActionBarActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
+        int id = v.getId();
+        switch (id){
+            case R.id.btnPlay:
+                if (mp.isPlaying()){
+                    mp.pause();
+                }else
+                    mp.start();
+                break;
+            case R.id.btnFF:
+                mp.seekTo(mp.getCurrentPosition()-5000);
+                break;
+            case R.id.btnFB:
+                mp.seekTo(mp.getCurrentPosition()+5000);
+                break;
+            case R.id.btnNxt:
+                mp.stop();
+                mp.release();
+                position = (position+1)%mySongs.size();
+                u = Uri.parse(mySongs.get(position).toString());
+                mp = MediaPlayer.create(getApplicationContext(), u);
+                mp.start();
+                break;
+            case R.id.btnPV:
+                mp.stop();
+                mp.release();
+                position = (position-1<0)? mySongs.size()-1: position-1;
+                u = Uri.parse(mySongs.get(position).toString());
+                mp = MediaPlayer.create(getApplicationContext(), u);
+                mp.start();
+                break;
+
+
+        }
     }
 }
